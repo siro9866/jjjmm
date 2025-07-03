@@ -24,7 +24,9 @@
         제목:<input type="text" name="title" value="${board.title}">
         내용:<input type="text" name="content" value="${board.content}">
         <!-- 업로드할 파일 -->
-        <input type="file" name="attachments" />
+        <input type="file" name="mFiles" />
+        <input type="file" name="mFiles" />
+        <input type="file" name="mFiles" />
     </form>
     <button type="button" data-btn="btnModify">수정</button>
 </div>
@@ -38,7 +40,20 @@
                 return;
             }
 
-            const formData = new FormData(document.querySelector("form[name=frm]")); // 파일 포함된 전체 form 데이터
+            // 비어있는 인풋파일 제거
+            const form = document.querySelector("form[name=frm]");
+            const originalFormData = new FormData(form);
+            const formData = new FormData();
+
+            for (const [key, value] of originalFormData.entries()) {
+                if (value instanceof File) {
+                    if (value.size > 0) {
+                        formData.append(key, value);
+                    }
+                } else {
+                    formData.append(key, value);
+                }
+            }
 
             $.ajax({
                 url: "/board/${board.id}",

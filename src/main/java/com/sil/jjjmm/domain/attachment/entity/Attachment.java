@@ -34,7 +34,7 @@ public class Attachment extends Base {
     private String uploadPath;
 
     @Comment("원본파일명")
-    @Column(name="ORG_FILE_NAME", nullable = false, length = 20)
+    @Column(name="ORG_FILE_NAME", nullable = false, length = 100)
     private String orgFileName;
 
     @Comment("시스템파일명")

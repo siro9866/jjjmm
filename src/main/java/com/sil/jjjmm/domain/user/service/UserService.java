@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -60,6 +62,7 @@ public class UserService {
      * @param request
      * @return
      */
+    @Transactional
     public UserDto.Response userCreate(UserDto.CreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException(utilMessage.getMessage("duplicate.username", null));
@@ -76,6 +79,7 @@ public class UserService {
      * @param id
      * @param request
      */
+    @Transactional
     public UserDto.Response userModify(String id, UserDto.ModifyRequest request) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));
@@ -90,6 +94,7 @@ public class UserService {
      * 삭제
      * @param id
      */
+    @Transactional
     public void userDelete(String id) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));

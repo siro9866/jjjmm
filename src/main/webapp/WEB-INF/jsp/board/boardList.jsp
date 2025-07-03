@@ -17,7 +17,7 @@
 <div>
     <ul>
         <c:forEach items="${boards.content}" var="board">
-            <li data-id="${board.id}">${board.title}</li>
+            <li data-id="${board.id}">${board.title}:${board.replyCount}:${board.attachmentCount}</li>
         </c:forEach>
     </ul>
 </div>

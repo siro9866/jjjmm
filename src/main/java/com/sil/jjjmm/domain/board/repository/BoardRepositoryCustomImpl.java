@@ -59,8 +59,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                                                 .where(attachment.board.eq(board)), "attachmentCount")
                         ))
                 .from(board)
-                .where(Objects.requireNonNull(createdAtBetween(search.getFromDate(), search.getToDate()))
-                        .and(searchValueAllCondition(search.getKeyword()))
+                .where(
+                        createdAtBetween(search.getFromDate(), search.getToDate()),
+                        searchValueAllCondition(search.getKeyword())
                 )
                 .orderBy(ORDERS.toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
@@ -70,9 +71,11 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(board.count())
                 .from(board)
-                .where(Objects.requireNonNull(createdAtBetween(search.getFromDate(), search.getToDate()))
-                        .and(searchValueAllCondition(search.getKeyword()))
-                );
+                .where(
+                        createdAtBetween(search.getFromDate(), search.getToDate()),
+                        searchValueAllCondition(search.getKeyword())
+                )
+                ;
 
         return PageableExecutionUtils.getPage(query, pageable, countQuery::fetchOne);
     }

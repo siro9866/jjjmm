@@ -23,9 +23,19 @@
 
 <div>
     <ul>
-        <li>${board.title}</li>
-        <li>${board.content}</li>
+        <li>제목: ${board.title}</li>
+        <li>내용: ${board.content}</li>
     </ul>
+
+    <div>
+        <ul>
+            <c:forEach items="${board.attachments}" var="attachment">
+                <li data-id="${attachment.id}">${attachment.orgFileName}</li>
+            </c:forEach>
+        </ul>
+    </div>
+
+
 
     <button type="button" data-btn="btnList">목록</button>
     <button type="button" data-btn="btnModify">수정</button>

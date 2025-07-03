@@ -1,7 +1,6 @@
 package com.sil.jjjmm.domain.board.service;
 
 import com.sil.jjjmm.domain.attachment.dto.AttachmentDto;
-import com.sil.jjjmm.domain.attachment.repository.AttachmentRepository;
 import com.sil.jjjmm.domain.attachment.service.AttachmentService;
 import com.sil.jjjmm.domain.board.dto.BoardDto;
 import com.sil.jjjmm.domain.board.entity.Board;
@@ -13,7 +12,10 @@ import com.sil.jjjmm.global.util.UtilCommon;
 import com.sil.jjjmm.global.util.UtilMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,7 +67,6 @@ public class BoardService {
 
         response.setAttachments(attachments);
         response.setAttachmentCount((long) attachments.size());
-        response.setAttachments(attachments);
         return response;
     }
 
@@ -96,13 +96,11 @@ public class BoardService {
      * @param id
      * @param request
      */
+    @Transactional
     public BoardDto.Response boardModify(String id, BoardDto.ModifyRequest request, MultipartFile[] mFiles) throws IOException {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));
         request.boardModify(board);
-
-        // MongoDB에 명시적으로 저장
-        boardRepository.save(board);
 
         // UI상에서 삭제된 파일은 삭제처리해야함
         // 파일정보삭제
@@ -131,15 +129,18 @@ public class BoardService {
      * 삭제
      * @param id
      */
+    @Transactional
     public void boardDelete(String id) throws IOException {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));
-        boardRepository.deleteById(board.getId());
 
         // 파일 삭제
         AttachmentDto.DeleteRequest attachmentDeleteRequest = new AttachmentDto.DeleteRequest();
         attachmentDeleteRequest.setParentType(ParentType.BOARD);
         attachmentDeleteRequest.setBoard(board);
         attachmentService.attachmentDeleteAll(attachmentDeleteRequest);
+
+        // 게시판삭제
+        boardRepository.deleteById(board.getId());
     }
 }

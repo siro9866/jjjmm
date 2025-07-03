@@ -15,10 +15,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
@@ -48,6 +50,7 @@ public class ReplyService {
      * @param request
      * @return
      */
+    @Transactional
     public ReplyDto.Response replyCreate(ReplyDto.CreateRequest request) {
 
         Reply reply = replyRepository.findById(request.getBoardId())
@@ -62,6 +65,7 @@ public class ReplyService {
      * @param id
      * @param request
      */
+    @Transactional
     public ReplyDto.Response modifyReply(String id, ReplyDto.ModifyRequest request) {
         Reply reply = replyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));
@@ -83,6 +87,7 @@ public class ReplyService {
      * 삭제
      * @param id
      */
+    @Transactional
     public void deleteReply(String id) {
         Reply reply = replyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ResponseCode.EXCEPTION_NODATA, utilMessage.getMessage("notfound.data", null)));
