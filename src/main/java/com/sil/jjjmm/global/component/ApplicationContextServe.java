@@ -1,6 +1,8 @@
 package com.sil.jjjmm.global.component;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -13,10 +15,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationContextServe implements ApplicationContextAware {
 	@Getter
-    private static ApplicationContext applicationContext;
+	private static ApplicationContext applicationContext;
 
 	@Override
-	public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
+	public void setApplicationContext(@NonNull ApplicationContext context) {
 		applicationContext = context;
 	}
+
+	@PostConstruct
+	public void init() {
+		// Spring 컨텍스트가 완전히 초기화된 후에 실행됩니다
+		if (applicationContext == null) {
+			throw new IllegalStateException("ApplicationContext가 초기화되지 않았습니다.");
+		}
+	}
 }
+
